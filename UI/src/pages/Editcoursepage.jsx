@@ -1,19 +1,41 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import Editcourse from '../components/Editcourse'
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { useLoaderData, useNavigate ,useParams} from 'react-router-dom';
 import { useState } from "react"
 import { Coursesloader } from './Learnmore';
 
 
 const Editcoursepage = () => {
   
-  const course=Coursesloader();
+  const [course,setCourse]=useState([])
+
+  const {id}=useParams();
+
+
+  useEffect(()=>{
+    const fetchCourses=async ()=>
+    {
+      try{
+        const res=await fetch(`/api/courses/${id}`);
+        const data=await res.json()
+        console.log(data,"hjkl")
+        setCourse(data);
+      }
+      catch(error){
+        console.log("error",error)
+      }
+      
+    }
+    fetchCourses();
+
+
+},[])
 console.log(course,"from edit page ")
 
 
 
 
-    const [title,setTitle]=useState(course.title);
+    const [title,setTitle]=useState('');
     const [courseId,setCourseId]=useState('');
     const [type,setType]=useState('');
     const [description,setDescription]=useState('');
@@ -25,13 +47,13 @@ console.log(course,"from edit page ")
       e.preventDefault();
       const updatedCourse={
         title,              //shorthand of title=title,
-        courseId,
+        
         type,
         description,
         price
       }
       const res=updateCourseSubmit(updatedCourse);
-      navigate(`/courses/${courseId}`)
+      navigate(`/learnmore/${id}`)
       // console.log("text",res);
   
     }
@@ -39,7 +61,7 @@ console.log(course,"from edit page ")
     
   
     const updateCourseSubmit= async(updatedCourse)=>{
-        const res=await fetch(`/api/courses/${courseId}`,{
+        const res=await fetch(`/api/courses/${id}`,{
                         method:'PUT',
                         headers:{
                           'Content-Type':'application/json',
@@ -71,7 +93,7 @@ console.log(course,"from edit page ")
                 id="title"
                 name="title"
                 className="border rounded w-full py-2 px-3 mb-2"
-                placeholder="eg. Certified Blockchain Associate"
+                placeholder={course.title}
                 required
   
   
@@ -117,6 +139,7 @@ console.log(course,"from edit page ")
                 name="type"
                 className="border rounded w-full py-2 px-3"
                 required
+                placeholder={course.type}
   
   
                 value={type}
@@ -144,7 +167,7 @@ console.log(course,"from edit page ")
                 name="description"
                 className="border rounded w-full py-2 px-3"
                 rows="4"
-                placeholder="Small description on the course"
+                placeholder={course.description}
   
   
   

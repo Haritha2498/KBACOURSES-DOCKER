@@ -42,7 +42,9 @@ router.post("/courses", async (req, res) => {
 
 router.put("/courses/:id", async (req, res) => {
   const data = req.body;
-  const courseId = data.courseId;
+  console.log(data,"dsfgh")
+  const courseId = req.params.id;
+  console.log(courseId)
   try {
     const result = await courses.findOneAndUpdate(
       { courseId: courseId },
@@ -52,7 +54,7 @@ router.put("/courses/:id", async (req, res) => {
     if (!result) {
       return res.status(404).send("Course not found");
     }
-    res.send("Course updated successfully");
+    res.status(200).send("Course updated successfully");
   } catch (error) {
     res.status(500).send("Server error");
   }
@@ -61,7 +63,7 @@ router.put("/courses/:id", async (req, res) => {
 router.delete("/courses/:id",verifyToken, async (req, res) => {
   const courseId = req.params.id;
   console.log(courseId)
-  if(req.useType!='admin'){
+  if(req.userType!='admin'){
     return res.status(401);
   }
   try {
